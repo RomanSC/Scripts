@@ -57,9 +57,8 @@ echo ‘KEYMAP=us’ > /etc/vconsole.conf
 #install some applications
 
 #install multilib and yaourt AUR access
-sed s/‘#[Multilib]
-#Include = /etc/pacman.d/mirrorlist’/‘[Multilib]
-Include = /etc/pacman.d/mirrorlist’/g /etc/pacman.conf
+sed -i 's/#Color/Color/' /etc/pacman.conf
+sed -i 's/#\[multilib\]/\[multilib\]\nInclude = \/etc\/pacman.d\/mirrorlist/' /etc/pacman.conf
 
 echo ‘[archlinuxfr]
 SigLevel = Never
