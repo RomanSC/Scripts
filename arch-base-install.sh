@@ -30,6 +30,9 @@ read -p “Set the root password:” $passphrase
 
 usermod -p $passphrase root
 
+#add the wheel group to /etc/sudoers
+echo "%wheel ALL=(ALL) ALL" >> /etc/sudoers
+
 #bootctl install
 bootctl install
 
@@ -54,7 +57,8 @@ hwclock --systohc --utc
 
 echo ‘KEYMAP=us’ > /etc/vconsole.conf
 
-#install some applications
+#install some packages
+pacman -S networkmanager intel-ucode
 
 #install multilib and yaourt AUR access
 sed -i 's/#Color/Color/' /etc/pacman.conf
