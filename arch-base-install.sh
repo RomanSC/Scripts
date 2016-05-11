@@ -30,6 +30,9 @@ read -p “Set the root password:” $passphrase
 
 usermod -p $passphrase root
 
+#bootctl install
+bootctl install
+
 #echo disk UUID for /dev/sda2 into /boot/loader/entries/arch.conf
 blkid /dev/sda2 | awk -F\" ‘{print $2}’ > /boot/loader/entries/arch.conf
 
