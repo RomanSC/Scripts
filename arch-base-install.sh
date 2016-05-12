@@ -17,12 +17,14 @@ useradd -mG wheel -s /bin/bash $USER
 
 #set the password for the newly created user
 echo $USER | passwd <<EOF
-$PASS:$PASS
+$PASS
+$PASS
 EOF
 
 #set the root password
 echo root | passwd <<EOF
-$ROOT:$ROOT
+$ROOT
+$ROOT
 EOF
 
 #bootctl install
@@ -61,9 +63,7 @@ echo '$HOSTN' > /etc/hostname
 echo '# Write tab then $HOSTN after localhost' >> /etc/hosts
 nano /etc/hosts
 
-#enable multilib and AUR access
-sed -i 's/#Color/Color/g' /etc/pacman.conf
-
+#enable NetworkManager at boot
 systemctl enable NetworkManager
 
 #add repo keys for the pipelight repository
@@ -72,14 +72,39 @@ pacman-key --lsign-key E49CC0415DC2D5CA
 
 #add the aur and pipelight repositories to /etc/pacman.conf
 echo <<EOF
-#user added repositories
+#multilib
+[multilib]
+Include = /etc/pacman.d/mirrorlist
+
+#arch linux user repository
 [archlinuxfr]
 SigLevel = Never
 Server = http://repo.archlinux.fr/$arch
 
+#pipelight for silverlight and windows flashplayer
 [pipelight]
 Server = http://repos.fds-team.de/stable/arch/$arch
 EOF >> /etc/pacman.conf
 
 #sync repositories and update
 pacman -Syyu --noconfirm
+
+#fun stuff
+echo 'Defaults insults' >> /etc/sudoers
+
+#pacman progress indicator
+sudo sed -i '/^\#VerbosePkgLists/aILoveCandy' /etc/pacman.conf
+
+#pacman colors
+sed -i 's/#Color/Color/g' /etc/pacman.conf
+
+#.bash_profile
+
+#autostart X11
+#just uncomment to activate after installing window manager or Desktop
+echo '[[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && startx ' >> /home/$USER/.bash_profile
+
+#alias pastebin
+#usage:
+# cat /path/to/file | pastebin
+echo 'alias pastebin="curl -F c=@- https://ptpb.pw/" ' >> /home/$USER/.bash_profile
