@@ -63,7 +63,7 @@ bootctl install
 #finish creating /boot/loader/entries/arch.conf and add correct hooks to mkinitcpio.conf
 echo 'Finish writing your /boot/loader/entries/arch.conf file: '
 nano /boot/loader/entries/arch.conf
-sed -i 's/HOOKS="base udev autodetect modconf block filesystems keyboard fsck"/HOOKS="base udev autodetect modconf block keymap encrypt lvm2 resume filesystems keyboard fsck"/g' ~/etc/mkinitcpio.conf
+sed -i 's/"block filesystems"/"block keymap encrypt lvm2 resume filesystems"/g' ~/etc/mkinitcpio.conf
 
 #update systemd-boot and mkinitcpio.conf
 bootctl update
@@ -140,24 +140,20 @@ alias ping='ping -c 8'
 alias router-reboot="curl -u 'admin:admin' 'http://192.168.0.1/setup.cgi?todo=reboot'"
 
 #desktop environment
+#i3wm & xfce4
+pacman -S xfce4-session gtk-xfce4-engine xfce4-settings xfce4-panel xfce4-power-manager xfconf
 
-#xfce4
-pacman -s
-
-su $username -c ‘xfce4-session gtk-xfce4-engine xfce4-settings xfce4-panel xfce4-power-manager xfconf’
 #xfce4-goodies
-su $username -c ‘xfce4-artwork xfce4-battery-plugin xfce4-datetime-plugin xfce4-notifyd’
+pacman -S xfce4-artwork xfce4-battery-plugin xfce4-datetime-plugin xfce4-notifyd
+
 #everything else
-su $username -c ‘sudo pacman -S terminator i3-wm rofi compton dconf-editor nautilus gnome-system-monitor gnome-calculator’
+pacman -S terminator i3-wm rofi compton dconf-editor nautilus gnome-system-monitor gnome-calculator
 
 #utilities
 pacman -S zip dosfstools wget rsync task bash-completion bashdb mlocate
 
 #web browser
 pacman -S firefox
-
-#gtk and icon themes, appearance
-pacman -S 
 
 #networking
 pacman -S openssh networkmanager ufw gufw
@@ -169,7 +165,7 @@ pacman -S pidgin
 pacman -S alsa-utils pavucontrol
 
 #graphics
-pacman -S eog gedit gimp inkscape
+pacman -S eog gimp inkscape
 
 #development
 pacman -S java ruby python git mtpfs gvfs-mtp gvfs-gphoto2
@@ -179,14 +175,6 @@ pacman -S vlc
 
 #office
 pacman -S libreoffice-still
-
-su $username -c ‘yaourt -S atom-editor android-studio android-sdk-platform-tools acroread’
-su $username -c ‘yaourt -S colorgrab’
-su $username -c ‘yaourt -S spotify blockify pulseaudio-equalizer-ladspa’
-su $username -c ‘yaourt -S purple-facebook telegram-purple pidgin-opensteamworks purple-hangouts-hg’
-su $username -c ‘yaourt -S ttf-droid-font ttf-font-awesome elementary-xfce-icons numix-themes-archblue-git’
-su $username -c ‘yaourt -S dtrx’
-su $username -c ‘yaourt -S google-talkplugin’
 
 #sync repositories and update
 pacman -Syyu --noconfirm
