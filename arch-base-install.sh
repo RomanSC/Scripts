@@ -1,76 +1,70 @@
 #!/bin/bash
 
-while [ x$username = “x” ]; do
+#install some packages
+pacman -S intel-ucode networkmanager
 
-read -p “Create the user account:” username
+#user accounts
+#set the username and password, set the root password
+read -p 'Enter username: ' USER
+read -p 'Enter password: ' PASS
+read -p 'Enter root password: ' ROOT
 
-if id -u $username >/dev/null 2>&1; then
+#uncomment the wheel group to /etc/sudoers
+sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers
 
-echo “That user already exists.”
+#create the user and give them sudoer permissions
+useradd -mG wheel -s /bin/bash $USER
 
-username=“”
+#set the password for the newly created user
+echo $USER | passwd <<EOF
+$PASS:$PASS
+EOF
 
-fi
-
-read -p “Create the user $username? [y/n]:” confirm
-
-if [ “$confirm” = “y” ]; then
-
-useradd -mG wheel -s /bin/bash $username
-
-if [ “$confirm” = “n” ]; then
-
-echo “User creation cancelled”
-
-fi
-
-while [ x$passphrase = “x” ]
-
-read -p “Set the root password:” $passphrase
-
-usermod -p $passphrase root
-
-#add the wheel group to /etc/sudoers
-echo "%wheel ALL=(ALL) ALL" >> /etc/sudoers
+#set the root password
+echo root | passwd <<EOF
+$ROOT:$ROOT
+EOF
 
 #bootctl install
 bootctl install
 
 #echo disk UUID for /dev/sda2 into /boot/loader/entries/arch.conf
-blkid /dev/sda2 | awk -F\" ‘{print $2}’ > /boot/loader/entries/arch.conf
+blkid /dev/sda2 | awk -F\" '{print $2}' > /boot/loader/entries/arch.conf
+nano /boot/loader/entries/arch.conf
 
 #finish creating /boot/loader/entries/arch.conf and add correct hooks to mkinitcpio.conf
 nano /boot/loader/entries/arch.conf
-sed s/‘HOOKS=”base udev autodetect modconf block filesystems keyboard fsck”’/‘HOOKS=”base udev autodetect modconf block keymap encrypt lvm2 resume filesystems keyboard fsck”’/g
+sed -i 's/HOOKS="base udev autodetect modconf block filesystems keyboard fsck"/HOOKS="base udev autodetect modconf block keymap encrypt lvm2 resume filesystems keyboard fsck"/g' ~/Desktop/testfile
+set -x; sed s/HOOKS=”base udev autodetect modconf block filesystems keyboard fsck”/HOOKS=”base udev autodetect modconf block keymap encrypt lvm2 resume filesystems keyboard fsck”/g’ ~/Desktop/testfile; set +x
 
 #update systemd-boot and mkinitcpio.conf
 bootctl update
 mkinitcpio -p linux
 
 #set the locale, timezone, and keymap
-echo ‘en_US.UTF-8 UTF-8’ > /etc/locale.gen
+echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen
 locale.gen
-echo ‘LANG=en_US.UTF-8’ > /etc/locale.conf
-
+echo 'LANG=en_US.UTF-8' > /etc/locale.conf
 ln -s /usr/share/zoneinfo/America/Detroit
 hwclock --systohc --utc
+echo 'KEYMAP=us' > /etc/vconsole.conf
 
-echo ‘KEYMAP=us’ > /etc/vconsole.conf
+#networking
 
-#install some packages
-pacman -S intel-ucode networkmanager
+read -p 'Enter hostname: ' HOSTN
 
-#enable networkmanager and set hostname
 systemctl enable NetworkManager
-echo "archworkstation" > /etc/hostname
+
+echo '$HOSTN' > /etc/hostname
+
 nano /etc/hosts
 
 #install multilib and yaourt AUR access
-sed -i 's/#Color/Color/' /etc/pacman.conf
-sed -i 's/#\[multilib\]/\[multilib\]\nInclude = \/etc\/pacman.d\/mirrorlist/' /etc/pacman.conf
+sed -i 's/#Color/Color/g' /etc/pacman.conf
 
-echo ‘[archlinuxfr]
+echo '[archlinuxfr]
 SigLevel = Never
-Server = http://repo.archlinux.fr/$arch’ >> /etc/pacman.conf
+Server = http://repo.archlinux.fr/$arch' >> /etc/pacman.conf
 
+#install packages
 pacman -S yaourt aurvote
