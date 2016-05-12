@@ -1,20 +1,56 @@
 #!/bin/bash
 
+#welcome
+cat <<EOF
+++++===========+=?OD8+====+==++++++?+???
+++++=======D888DODDD8D8++=+++++++++?????
+++++=====NDDD88Z8DZ8D888IO?7+=++++??????
++++++==+8D8O8OOO88O88ZOD8OO8DD++????????
++++++==N88O$OO88OZZZZOOZ8DDD88D7????????
++++++=ND88$7?+?~~~~~++?I7O8DD8DZI???????
+++++++?D8I=~::,,,,:~=++IIOO88DOO????????
+++++++I8O=:,.,..,,,,~=+?IZ8DDDD????????I
++++++++8Z=~,..,,,,,:==+?I$DDNN8??????I??
++++++++D8=~:,..,.,::~=??77ONNND?????I?II
++++++++7D?7II~:,,,=$O7I77$$DNNI??????III
+?+??++++8?~~=+?~,=7I+7Z$$77D87?????I7I77
+?????????+??,:=+,=I?=+???I7OI+???IIIZZ78
+?????????+:,,,,:,=?+~:~~=?7M7IIII$$??I88
+????????$Z,...,::=II=::~+I$?7IIII7777$$$
+????????ZD=,..:7~?$I~:=+?I$II7II7$77777$
+?????Z88DD=::,,:~~++~~+II7OZ7777I$ZZ$$$Z
+?III8888DDD=~~~~~:??7?III$D8DZ$$7Z8OZOZZ
+II78DDDDDDD8+=~=~=+I??7$Z$DDNNZZ$ZO$$ZZO
+ZDDDDDDDNDD88?=~~~=+I7$?$$ZNNNNNND8ZOZOZ
+DDDDDNDDDDD8N?+~~~~=I$??$$ZNNNNNNNNNNDDO
+D8DDDDNDDDDDD++II?~,,::+7$$NNNDNNNNNNNNN
+DDNDDDDDDDD8N=+~,,:~==?=77$DNNNNNNNNNNNN
+8DDDDDDDDDD8D+=~=?I::~?II$NDDNNDNNNNNNNN
+D8DDNDD8DDNDD~~~,,,,=??II$DDDNNNNNNNNNNN
+*Welcome. I'm gonna Linux this for you.*
+EOF
+
+echo 'Updating: '
 #install some packages
-pacman -S intel-ucode networkmanager
+pacman -Syyu --noconfirm
+echo 'Installing Intel Microcode fixes and NetworkManager: '
+pacman -S intel-ucode networkmanager --noconfirm
 
 #user accounts
 #set the username
+echo 'Setting up accounts: '
 read -p 'Enter username: ' USER
 
 #uncomment the wheel group to /etc/sudoers
+echo 'Creating wheel group: '
 sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers
 
 #create the user and give them sudoer permissions
+echo "Adding $USER to wheel group: "
 useradd -mG wheel -s /bin/bash $USER
 
 #set the password for the newly created user
-echo 'Enter user password'
+echo 'Enter user password: '
 passwd $USER
 
 #set the root password
@@ -24,11 +60,8 @@ passwd root
 #bootctl install
 bootctl install
 
-#echo disk UUID for /dev/sda2 into /boot/loader/entries/arch.conf
-blkid /dev/sda2 | awk -F\" '{print $2}' > /boot/loader/entries/arch.conf
-nano /boot/loader/entries/arch.conf
-
 #finish creating /boot/loader/entries/arch.conf and add correct hooks to mkinitcpio.conf
+echo 'Finish writing your /boot/loader/entries/arch.conf file: '
 nano /boot/loader/entries/arch.conf
 sed -i 's/HOOKS="base udev autodetect modconf block filesystems keyboard fsck"/HOOKS="base udev autodetect modconf block keymap encrypt lvm2 resume filesystems keyboard fsck"/g' ~/etc/mkinitcpio.conf
 
@@ -51,10 +84,10 @@ echo 'Enter host name:'
 read -p 'Enter hostname: ' HOSTN
 
 #echo the hostname to /etc/hostname
-echo '$HOSTN' > /etc/hostname
+echo $HOSTN > /etc/hostname
 
 #prepare /etc/hosts file for user creation via nano
-echo '# Write tab then $HOSTN after localhost' >> /etc/hosts
+echo "# Write tab then $HOSTN after localhost" >> /etc/hosts
 nano /etc/hosts
 
 #enable NetworkManager at boot
@@ -100,71 +133,63 @@ echo '[[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && startx ' >> /home/$USER/.bash_prof
 # cat /path/to/file | pastebin
 echo 'alias pastebin="curl -F c=@- https://ptpb.pw/" ' >> /home/$USER/.bash_profile
 
+#ping limit to eight attempts
+alias ping='ping -c 8'
+
+#reboot TP-Link router (beta) :P
+alias router-reboot="curl -u 'admin:admin' 'http://192.168.0.1/setup.cgi?todo=reboot'"
+
+#desktop environment
+
+#xfce4
+pacman -s
+
+su $username -c ‘xfce4-session gtk-xfce4-engine xfce4-settings xfce4-panel xfce4-power-manager xfconf’
+#xfce4-goodies
+su $username -c ‘xfce4-artwork xfce4-battery-plugin xfce4-datetime-plugin xfce4-notifyd’
+#everything else
+su $username -c ‘sudo pacman -S terminator i3-wm rofi compton dconf-editor nautilus gnome-system-monitor gnome-calculator’
+
+#utilities
+pacman -S zip dosfstools wget rsync task bash-completion bashdb mlocate
+
+#web browser
+pacman -S firefox
+
+#gtk and icon themes, appearance
+pacman -S 
+
+#networking
+pacman -S openssh networkmanager ufw gufw
+
+#messaging
+pacman -S pidgin
+
+#audio
+pacman -S alsa-utils pavucontrol
+
+#graphics
+pacman -S eog gedit gimp inkscape
+
+#development
+pacman -S java ruby python git mtpfs gvfs-mtp gvfs-gphoto2
+
+#video
+pacman -S vlc
+
+#office
+pacman -S libreoffice-still
+
+su $username -c ‘yaourt -S atom-editor android-studio android-sdk-platform-tools acroread’
+su $username -c ‘yaourt -S colorgrab’
+su $username -c ‘yaourt -S spotify blockify pulseaudio-equalizer-ladspa’
+su $username -c ‘yaourt -S purple-facebook telegram-purple pidgin-opensteamworks purple-hangouts-hg’
+su $username -c ‘yaourt -S ttf-droid-font ttf-font-awesome elementary-xfce-icons numix-themes-archblue-git’
+su $username -c ‘yaourt -S dtrx’
+su $username -c ‘yaourt -S google-talkplugin’
+
 #sync repositories and update
 pacman -Syyu --noconfirm
 
 #exit
-cat <<EOF
-++++===========+=?OD8+====+==++++++?+???
-++++=======D888DODDD8D8++=+++++++++?????
-++++=====NDDD88Z8DZ8D888IO?7+=++++??????
-+++++==+8D8O8OOO88O88ZOD8OO8DD++????????
-+++++==N88O$OO88OZZZZOOZ8DDD88D7????????
-+++++=ND88$7?+?~~~~~++?I7O8DD8DZI???????
-++++++?D8I=~::,,,,:~=++IIOO88DOO????????
-++++++I8O=:,.,..,,,,~=+?IZ8DDDD????????I
-+++++++8Z=~,..,,,,,:==+?I$DDNN8??????I??
-+++++++D8=~:,..,.,::~=??77ONNND?????I?II
-+++++++7D?7II~:,,,=$O7I77$$DNNI??????III
-?+??++++8?~~=+?~,=7I+7Z$$77D87?????I7I77
-?????????+??,:=+,=I?=+???I7OI+???IIIZZ78
-?????????+:,,,,:,=?+~:~~=?7M7IIII$$??I88
-????????$Z,...,::=II=::~+I$?7IIII7777$$$
-????????ZD=,..:7~?$I~:=+?I$II7II7$77777$
-?????Z88DD=::,,:~~++~~+II7OZ7777I$ZZ$$$Z
-?III8888DDD=~~~~~:??7?III$D8DZ$$7Z8OZOZZ
-II78DDDDDDD8+=~=~=+I??7$Z$DDNNZZ$ZO$$ZZO
-ZDDDDDDDNDD88?=~~~=+I7$?$$ZNNNNNND8ZOZOZ
-DDDDDNDDDDD8N?+~~~~=I$??$$ZNNNNNNNNNNDDO
-D8DDDDNDDDDDD++II?~,,::+7$$NNNDNNNNNNNNN
-DDNDDDDDDDD8N=+~,,:~==?=77$DNNNNNNNNNNNN
-8DDDDDDDDDD8D+=~=?I::~?II$NDDNNDNNNNNNNN
-D8DDNDD8DDNDD~~~,,,,=??II$DDDNNNNNNNNNNN
-********** RomanSC wuz here ************
-EOF
-
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-echo ...
-
 exit
