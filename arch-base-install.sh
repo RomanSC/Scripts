@@ -58,7 +58,12 @@ hwclock --systohc --utc
 echo ‘KEYMAP=us’ > /etc/vconsole.conf
 
 #install some packages
-pacman -S networkmanager intel-ucode
+pacman -S intel-ucode networkmanager
+
+#enable networkmanager and set hostname
+systemctl enable NetworkManager
+echo "archworkstation" > /etc/hostname
+nano /etc/hosts
 
 #install multilib and yaourt AUR access
 sed -i 's/#Color/Color/' /etc/pacman.conf
@@ -67,4 +72,5 @@ sed -i 's/#\[multilib\]/\[multilib\]\nInclude = \/etc\/pacman.d\/mirrorlist/' /e
 echo ‘[archlinuxfr]
 SigLevel = Never
 Server = http://repo.archlinux.fr/$arch’ >> /etc/pacman.conf
-su $username -c ‘sudo pacman -S yaourt aurvote’
+
+pacman -S yaourt aurvote
