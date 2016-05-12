@@ -34,8 +34,7 @@ nano /boot/loader/entries/arch.conf
 
 #finish creating /boot/loader/entries/arch.conf and add correct hooks to mkinitcpio.conf
 nano /boot/loader/entries/arch.conf
-sed -i 's/HOOKS="base udev autodetect modconf block filesystems keyboard fsck"/HOOKS="base udev autodetect modconf block keymap encrypt lvm2 resume filesystems keyboard fsck"/g' ~/Desktop/testfile
-set -x; sed s/HOOKS=”base udev autodetect modconf block filesystems keyboard fsck”/HOOKS=”base udev autodetect modconf block keymap encrypt lvm2 resume filesystems keyboard fsck”/g’ ~/Desktop/testfile; set +x
+sed -i 's/HOOKS="base udev autodetect modconf block filesystems keyboard fsck"/HOOKS="base udev autodetect modconf block keymap encrypt lvm2 resume filesystems keyboard fsck"/g' ~/etc/mkinitcpio.conf
 
 #update systemd-boot and mkinitcpio.conf
 bootctl update
@@ -51,20 +50,36 @@ echo 'KEYMAP=us' > /etc/vconsole.conf
 
 #networking
 
+#set the hostname
+echo 'Enter host name:'
 read -p 'Enter hostname: ' HOSTN
+
+#echo the hostname to /etc/hostname
+echo '$HOSTN' > /etc/hostname
+
+#prepare /etc/hosts file for user creation via nano
+echo '# Write tab then $HOSTN after localhost' >> /etc/hosts
+nano /etc/hosts
+
+#enable multilib and AUR access
+sed -i 's/#Color/Color/g' /etc/pacman.conf
 
 systemctl enable NetworkManager
 
-echo '$HOSTN' > /etc/hostname
+#add repo keys for the pipelight repository
+pacman-key -r E49CC0415DC2D5CA
+pacman-key --lsign-key E49CC0415DC2D5CA
 
-nano /etc/hosts
-
-#install multilib and yaourt AUR access
-sed -i 's/#Color/Color/g' /etc/pacman.conf
-
-echo '[archlinuxfr]
+#add the aur and pipelight repositories to /etc/pacman.conf
+echo <<EOF
+#user added repositories
+[archlinuxfr]
 SigLevel = Never
-Server = http://repo.archlinux.fr/$arch' >> /etc/pacman.conf
+Server = http://repo.archlinux.fr/$arch
 
-#install packages
-pacman -S yaourt aurvote
+[pipelight]
+Server = http://repos.fds-team.de/stable/arch/$arch
+EOF >> /etc/pacman.conf
+
+#sync repositories and update
+pacman -Syyu --noconfirm
