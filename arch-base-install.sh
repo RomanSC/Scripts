@@ -4,10 +4,8 @@
 pacman -S intel-ucode networkmanager
 
 #user accounts
-#set the username and password, set the root password
+#set the username
 read -p 'Enter username: ' USER
-read -p 'Enter password: ' PASS
-read -p 'Enter root password: ' ROOT
 
 #uncomment the wheel group to /etc/sudoers
 sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers
@@ -16,16 +14,12 @@ sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers
 useradd -mG wheel -s /bin/bash $USER
 
 #set the password for the newly created user
-echo $USER | passwd <<EOF
-$PASS
-$PASS
-EOF
+echo 'Enter user password'
+passwd $USER
 
 #set the root password
-echo root | passwd <<EOF
-$ROOT
-$ROOT
-EOF
+echo 'Enter root password: '
+passwd root
 
 #bootctl install
 bootctl install
@@ -138,6 +132,7 @@ DDNDDDDDDDD8N=+~,,:~==?=77$DNNNNNNNNNNNN
 D8DDNDD8DDNDD~~~,,,,=??II$DDDNNNNNNNNNNN
 ********** RomanSC wuz here ************
 EOF
+
 echo ...
 echo ...
 echo ...
