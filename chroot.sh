@@ -30,6 +30,7 @@ D8DDNDD8DDNDD~~~,,,,=??II$DDDNNNNNNNNNNN
 *Welcome. I'm gonna Linux this for you.*
 EOF
 
+#chroot
 echo 'Updating: '
 #install some packages
 pacman -Syyu --noconfirm
@@ -63,7 +64,7 @@ bootctl install
 #finish creating /boot/loader/entries/arch.conf and add correct hooks to mkinitcpio.conf
 echo 'Finish writing your /boot/loader/entries/arch.conf file: '
 nano /boot/loader/entries/arch.conf
-sed -i 's/"block filesystems"/"block keymap encrypt lvm2 resume filesystems"/g' ~/etc/mkinitcpio.conf
+sed -i 's/^HOOKS.*/HOOKS="base udev autodetect modconf block keymap encrypt lvm2 resume filesystems keyboard fsck"/g' ~/etc/mkinitcpio.conf
 
 #update systemd-boot and mkinitcpio.conf
 bootctl update
