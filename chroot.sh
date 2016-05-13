@@ -1,41 +1,7 @@
 #!/bin/bash
 
-#welcome
-cat <<EOF
-++++===========+=?OD8+====+==++++++?+???
-++++=======D888DODDD8D8++=+++++++++?????
-++++=====NDDD88Z8DZ8D888IO?7+=++++??????
-+++++==+8D8O8OOO88O88ZOD8OO8DD++????????
-+++++==N88O$OO88OZZZZOOZ8DDD88D7????????
-+++++=ND88$7?+?~~~~~++?I7O8DD8DZI???????
-++++++?D8I=~::,,,,:~=++IIOO88DOO????????
-++++++I8O=:,.,..,,,,~=+?IZ8DDDD????????I
-+++++++8Z=~,..,,,,,:==+?I$DDNN8??????I??
-+++++++D8=~:,..,.,::~=??77ONNND?????I?II
-+++++++7D?7II~:,,,=$O7I77$$DNNI??????III
-?+??++++8?~~=+?~,=7I+7Z$$77D87?????I7I77
-?????????+??,:=+,=I?=+???I7OI+???IIIZZ78
-?????????+:,,,,:,=?+~:~~=?7M7IIII$$??I88
-????????$Z,...,::=II=::~+I$?7IIII7777$$$
-????????ZD=,..:7~?$I~:=+?I$II7II7$77777$
-?????Z88DD=::,,:~~++~~+II7OZ7777I$ZZ$$$Z
-?III8888DDD=~~~~~:??7?III$D8DZ$$7Z8OZOZZ
-II78DDDDDDD8+=~=~=+I??7$Z$DDNNZZ$ZO$$ZZO
-ZDDDDDDDNDD88?=~~~=+I7$?$$ZNNNNNND8ZOZOZ
-DDDDDNDDDDD8N?+~~~~=I$??$$ZNNNNNNNNNNDDO
-D8DDDDNDDDDDD++II?~,,::+7$$NNNDNNNNNNNNN
-DDNDDDDDDDD8N=+~,,:~==?=77$DNNNNNNNNNNNN
-8DDDDDDDDDD8D+=~=?I::~?II$NDDNNDNNNNNNNN
-D8DDNDD8DDNDD~~~,,,,=??II$DDDNNNNNNNNNNN
-*Welcome. I'm gonna Linux this for you.*
-EOF
-
 #chroot
 echo 'Updating: '
-#install some packages
-pacman -Syyu --noconfirm
-echo 'Installing Intel Microcode fixes and NetworkManager: '
-pacman -S intel-ucode networkmanager --noconfirm
 
 #user accounts
 #set the username
@@ -99,8 +65,9 @@ pacman-key -r E49CC0415DC2D5CA
 pacman-key --lsign-key E49CC0415DC2D5CA
 
 #add the aur and pipelight repositories to /etc/pacman.conf
-echo <<EOF
+
 #multilib
+echo <<EOF
 [multilib]
 Include = /etc/pacman.d/mirrorlist
 
@@ -124,7 +91,6 @@ sudo sed -i '/^\#VerbosePkgLists/aILoveCandy' /etc/pacman.conf
 sed -i 's/#Color/Color/g' /etc/pacman.conf
 
 #.bash_profile
-
 #autostart X11
 #just uncomment to activate after installing window manager or Desktop
 echo '[[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && startx ' >> /home/$USER/.bash_profile
@@ -140,45 +106,39 @@ alias ping='ping -c 8'
 #reboot TP-Link router (beta) :P
 alias router-reboot="curl -u 'admin:admin' 'http://192.168.0.1/setup.cgi?todo=reboot'"
 
-#desktop environment
-#i3wm & xfce4
-pacman -S xfce4-session gtk-xfce4-engine xfce4-settings xfce4-panel xfce4-power-manager xfconf
-
-#xfce4-goodies
-pacman -S xfce4-artwork xfce4-battery-plugin xfce4-datetime-plugin xfce4-notifyd
-
-#everything else
-pacman -S terminator i3-wm rofi compton dconf-editor nautilus gnome-system-monitor gnome-calculator
-
-#utilities
-pacman -S zip dosfstools wget rsync task bash-completion bashdb mlocate
-
-#web browser
-pacman -S firefox
-
-#networking
-pacman -S openssh networkmanager ufw gufw
-
-#messaging
-pacman -S pidgin
-
-#audio
-pacman -S alsa-utils pavucontrol
-
-#graphics
-pacman -S eog gimp inkscape
-
-#development
-pacman -S java ruby python git mtpfs gvfs-mtp gvfs-gphoto2
-
-#video
-pacman -S vlc
-
-#office
-pacman -S libreoffice-still
-
-#sync repositories and update
+#update & install some packages
 pacman -Syyu --noconfirm
+
+cat <<EOF
+++++===========+=?OD8+====+==++++++?+???
+++++=======D888DODDD8D8++=+++++++++?????
+++++=====NDDD88Z8DZ8D888IO?7+=++++??????
++++++==+8D8O8OOO88O88ZOD8OO8DD++????????
++++++==N88O$OO88OZZZZOOZ8DDD88D7????????
++++++=ND88$7?+?~~~~~++?I7O8DD8DZI???????
+++++++?D8I=~::,,,,:~=++IIOO88DOO????????
+++++++I8O=:,.,..,,,,~=+?IZ8DDDD????????I
++++++++8Z=~,..,,,,,:==+?I$DDNN8??????I??
++++++++D8=~:,..,.,::~=??77ONNND?????I?II
++++++++7D?7II~:,,,=$O7I77$$DNNI??????III
+?+??++++8?~~=+?~,=7I+7Z$$77D87?????I7I77
+?????????+??,:=+,=I?=+???I7OI+???IIIZZ78
+?????????+:,,,,:,=?+~:~~=?7M7IIII$$??I88
+????????$Z,...,::=II=::~+I$?7IIII7777$$$
+????????ZD=,..:7~?$I~:=+?I$II7II7$77777$
+?????Z88DD=::,,:~~++~~+II7OZ7777I$ZZ$$$Z
+?III8888DDD=~~~~~:??7?III$D8DZ$$7Z8OZOZZ
+II78DDDDDDD8+=~=~=+I??7$Z$DDNNZZ$ZO$$ZZO
+ZDDDDDDDNDD88?=~~~=+I7$?$$ZNNNNNND8ZOZOZ
+DDDDDNDDDDD8N?+~~~~=I$??$$ZNNNNNNNNNNDDO
+D8DDDDNDDDDDD++II?~,,::+7$$NNNDNNNNNNNNN
+DDNDDDDDDDD8N=+~,,:~==?=77$DNNNNNNNNNNNN
+8DDDDDDDDDD8D+=~=?I::~?II$NDDNNDNNNNNNNN
+D8DDNDD8DDNDD~~~,,,,=??II$DDDNNNNNNNNNNN
+EOF
+
+#ASCII art
+sleep .3
 
 #exit
 exit

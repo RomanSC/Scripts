@@ -1,37 +1,14 @@
-#welcome
-cat <<EOF
-++++===========+=?OD8+====+==++++++?+???
-++++=======D888DODDD8D8++=+++++++++?????
-++++=====NDDD88Z8DZ8D888IO?7+=++++??????
-+++++==+8D8O8OOO88O88ZOD8OO8DD++????????
-+++++==N88O$OO88OZZZZOOZ8DDD88D7????????
-+++++=ND88$7?+?~~~~~++?I7O8DD8DZI???????
-++++++?D8I=~::,,,,:~=++IIOO88DOO????????
-++++++I8O=:,.,..,,,,~=+?IZ8DDDD????????I
-+++++++8Z=~,..,,,,,:==+?I$DDNN8??????I??
-+++++++D8=~:,..,.,::~=??77ONNND?????I?II
-+++++++7D?7II~:,,,=$O7I77$$DNNI??????III
-?+??++++8?~~=+?~,=7I+7Z$$77D87?????I7I77
-?????????+??,:=+,=I?=+???I7OI+???IIIZZ78
-?????????+:,,,,:,=?+~:~~=?7M7IIII$$??I88
-????????$Z,...,::=II=::~+I$?7IIII7777$$$
-????????ZD=,..:7~?$I~:=+?I$II7II7$77777$
-?????Z88DD=::,,:~~++~~+II7OZ7777I$ZZ$$$Z
-?III8888DDD=~~~~~:??7?III$D8DZ$$7Z8OZOZZ
-II78DDDDDDD8+=~=~=+I??7$Z$DDNNZZ$ZO$$ZZO
-ZDDDDDDDNDD88?=~~~=+I7$?$$ZNNNNNND8ZOZOZ
-DDDDDNDDDDD8N?+~~~~=I$??$$ZNNNNNNNNNNDDO
-D8DDDDNDDDDDD++II?~,,::+7$$NNNDNNNNNNNNN
-DDNDDDDDDDD8N=+~,,:~==?=77$DNNNNNNNNNNNN
-8DDDDDDDDDD8D+=~=?I::~?II$NDDNNDNNNNNNNN
-D8DDNDD8DDNDD~~~,,,,=??II$DDDNNNNNNNNNNN
-*********Part before you fart.**********
-EOF
+#partitioning
+lsblk -af
+read -p 'Which disk would you like to partition?: ' WHICHDISK
+fdisk $WHICHDISK
 
-#partition
+#genfstab
+genfstab -U -p /mnt >> /mnt/etc/fstab
 
 #pacstrap
-pacstrap /mnt base base-devel xfce4-session gtk-xfce4-engine xfce4-settings xfce4-panel xfce4-power-manager xfconf xfce4-artwork xfce4-battery-plugin xfce4-datetime-plugin xfce4-notifyd terminator i3-wm rofi compton dconf-editor nautilus gnome-system-monitor gnome-calculator zip dosfstools wget rsync task bash-completion bashdb mlocate firefox openssh networkmanager ufw gufw pidgin alsa-utils pavucontrol eog gimp inkscape ruby python git mtpfs gvfs-mtp gvfs-gphoto2 vlc libreoffice-still intel-ucode networkmanager
+echo 'Installing the system: '
+pacstrap -i /mnt base base-devel intel-ucode networkmanager ufw openssh bash-completion bashdb mlocate zip dosfstools wget git rsync task mtpfs ruby python xfce4-session gtk-xfce4-engine xfce4-settings xfce4-panel xfce4-power-manager xfconf xfce4-artwork xfce4-battery-plugin xfce4-datetime-plugin xfce4-notifyd terminator i3-wm rofi compton nautilus dconf-editor redshift gnome-system-monitor gnome-calculator firefox gufw pidgin alsa-utils pulseaudio pavucontrol eog gimp inkscapegvfs-mtp gvfs-gphoto2 vlc libreoffice-still virtualbox virtualbox-host-dkms
 
 #chroot
-arch-chroot /mnt /bin/bash/
+arch-chroot /mnt /bin/bash/ -c "./chroot.sh"
