@@ -1,10 +1,9 @@
-#establish network connection
-
-
 #partitioning
 lsblk -af
 read -p 'Which disk would you like to partition?: ' WHICHDISK
 fdisk $WHICHDISK
+
+
 
 #genfstab
 genfstab -U -p /mnt >> /mnt/etc/fstab

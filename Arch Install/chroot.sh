@@ -8,9 +8,23 @@ echo 'Updating: '
 echo 'Setting up accounts: '
 read -p 'Enter username: ' USER
 
-#uncomment the wheel group to /etc/sudoers
-echo 'Creating wheel group: '
-sed -i 's/# %wheel ALL=(ALL) ALL/%wheel ALL=(ALL) ALL/g' /etc/sudoers
+#uncomment the wheel group and other /etc/sudoers edits
+echo 'Edit /etc/sudoers and uncomment the wheel group, add Defaults insults: '
+sleep 5s
+EDITOR=nano visudo
+
+#Eh..... I'll fix this when I suck less at vim
+#wheel group
+#visudo <<EOF
+#:%s/^# %wheel ALL=(ALL) ALL/%wheel $HOSTNAME=ALL=(ALL) ALL/g
+#:wq
+#EOF
+#
+#insults
+#visudo <<EOF
+#:%s/^\# Defaults!REBOOT !log_output/Defaults insults/g
+#:wq
+#EOF
 
 #create the user and give them sudoer permissions
 echo "Adding $USER to wheel group: "
@@ -28,6 +42,7 @@ passwd root
 bootctl install
 
 #finish creating /boot/loader/entries/arch.conf and add correct hooks to mkinitcpio.conf
+blkid /dev/sda2 | awk "{print $2}" | sed 's/"//g' >> /boot/loader/entries/arch.conf
 echo 'Finish writing your /boot/loader/entries/arch.conf file: '
 nano /boot/loader/entries/arch.conf
 sed -i 's/^HOOKS.*/HOOKS="base udev autodetect modconf block keymap encrypt lvm2 resume filesystems keyboard fsck"/g' ~/etc/mkinitcpio.conf
@@ -82,8 +97,6 @@ Server = http://repos.fds-team.de/stable/arch/$arch
 EOF >> /etc/pacman.conf
 
 #fun stuff
-echo 'Defaults insults' >> /etc/sudoers
-
 #pacman progress indicator
 sudo sed -i '/^\#VerbosePkgLists/aILoveCandy' /etc/pacman.conf
 
@@ -143,5 +156,10 @@ EOF
 #ASCII art
 sleep .3
 
-#exit
-exit
+#Check and see if all is good
+echo 'Check to see if everything is good: '
+echo '. . .'
+lsblk -af
+echo '. . .'
+cat /etc/fstab; cat /boot/loader/entries/arch.conf
+echo '. . .'
