@@ -19,7 +19,7 @@ vgcreate vol0 /dev/mapper/cryptroot
 free --giga | grep Mem
 read -p 'How many gigabytes do you want your swap to be? (Should be the same as the first number after Mem from above.): ' SWAPSIZE
 lvcreate --name /dev/mapper/vol0-lv_swap -L $SWAPSIZE'GB' vol0
-lvcreate --name /dev/mapper/vol0-lv_swap -l 100%FREE vol0
+lvcreate --name /dev/mapper/vol0-lv_root -l 100%FREE vol0
 
 #formatting
 read -p 'Which partition is /boot? (For example /dev/sdx1): ' WHICHISBOOT
