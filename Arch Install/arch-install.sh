@@ -16,13 +16,13 @@ pvcreate /dev/mapper/cryptroot
 vgcreate vol0 /dev/mapper/cryptroot
 
 #show the user the amount for $SWAPSIZE
-free --kilo | grep Mem
-read -p 'How many kilobytes do you want your swap to be? (Should be the same as the first number after Mem from above.): ' SWAPSIZE
-lvcreate --name /dev/mapper/vol0-lv_swap -L $SWAPSIZE vol0
+free --giga | grep Mem
+read -p 'How many gigabytes do you want your swap to be? (Should be the same as the first number after Mem from above.): ' SWAPSIZE
+lvcreate --name /dev/mapper/vol0-lv_swap -L $SWAPSIZE'GB' vol0
 lvcreate --name /dev/mapper/vol0-lv_swap -l 100%FREE vol0
 
 #formatting
-read -p "Which partition is /boot? (For example /dev/sdx1): " WHICHISBOOT
+read -p 'Which partition is /boot? (For example /dev/sdx1): ' WHICHISBOOT
 mkfs.fat -F32 $WHICHISBOOT
 mkswap /dev/mapper/vol0-lv_swap
 mkfs.ext4 /dev/mapper/vol0-lv_root
